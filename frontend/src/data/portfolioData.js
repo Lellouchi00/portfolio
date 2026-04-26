@@ -74,5 +74,25 @@ export const projects = [
     githubUrl: "https://github.com/Lellouchi00/Ecrili",
     featured: true,
   },
+  {
+    id: 2,
+    title: "Epices-shop Platform",
+    description: "A full-stack e-commerce app with React, Node.js, and MongoDB. Features include auth, cart, payment integration, and admin dashboard.",
+    image: "/images/project2.png", 
+    tags: ["React", "Node.js", "MongoDB", "Stripe"],
+    liveUrl: "https://example.com",
+    githubUrl: "https://github.com/Lellouchi00/Spices_Shop",
+    featured: true,
+  },
+   {
+    id: 3,
+    title: "Card Matcher Game",
+    description: "A full-stack e-commerce app with React, Node.js, and MongoDB. Features include auth, cart, payment integration, and admin dashboard.",
+    image: "/images/project3.png", 
+    tags: ["React", "Node.js", "MongoDB", "Stripe"],
+    liveUrl: "https://example.com",
+    githubUrl: "https://github.com/Lellouchi00/Card-matcher",
+    featured: true,
+  },
   
 ];
