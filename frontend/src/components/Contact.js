@@ -1,8 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { personalInfo } from '../data/portfolioData';
-import axios from 'axios';
 
-const InputField = ({ label, type = 'text', value, onChange, placeholder, required, error, multiline }) => {
+const FORM_NAME = 'contact';
+
+const encodeFormData = (data) =>
+  Object.keys(data)
+    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
+    .join('&');
+
+const InputField = ({ label, type = 'text', value, onChange, placeholder, required, error, multiline, name }) => {
   const [focused, setFocused] = useState(false);
   const style = {
     width: '100%',
@@ -32,6 +38,7 @@ const InputField = ({ label, type = 'text', value, onChange, placeholder, requir
       </label>
       {multiline ? (
         <textarea
+          name={name}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
@@ -42,6 +49,7 @@ const InputField = ({ label, type = 'text', value, onChange, placeholder, requir
         />
       ) : (
         <input
+          name={name}
           type={type}
           value={value}
           onChange={onChange}
@@ -81,23 +89,27 @@ export default function Contact() {
     return errs;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
     setStatus('sending');
 
     try {
-      const res = await axios.post('/api/contact', formData);
-      if (res.data.success) {
-        setStatus('success');
-        setFormData({ name: '', email: '', message: '' });
-        setTimeout(() => setStatus(null), 5000);
-      }
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encodeFormData({ 'form-name': FORM_NAME, ...formData }),
+      });
+
+      setStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setStatus(null), 5000);
     } catch (err) {
-      const msg = err.response?.data?.error || 'Failed to send. Please try again.';
       setStatus('error');
-      setErrors({ submit: msg });
+      setErrors({ submit: 'Failed to send. Please try again.' });
       setTimeout(() => setStatus(null), 5000);
     }
   };
@@ -227,12 +239,22 @@ export default function Contact() {
           </div>
 
           {/* Right — form */}
-          <div className="glass-card" style={{
+          <form
+            name={FORM_NAME}
+            method="POST"
+            data-netlify="true"
+            data-netlify-honeypot="bot-field"
+            onSubmit={handleSubmit}
+            className="glass-card"
+            style={{
             padding: '36px',
             opacity: visible ? 1 : 0,
             transform: visible ? 'translateX(0)' : 'translateX(30px)',
             transition: 'all 0.7s ease 0.2s',
-          }}>
+          }}
+          >
+            <input type="hidden" name="form-name" value={FORM_NAME} />
+            <input type="hidden" name="bot-field" />
             <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.2rem', marginBottom: '24px' }}>
               Send a Message
             </h3>
@@ -245,6 +267,7 @@ export default function Contact() {
                 placeholder="John Doe"
                 required
                 error={errors.name}
+                name="name"
               />
               <InputField
                 label="Email Address"
@@ -254,6 +277,7 @@ export default function Contact() {
                 placeholder="john@example.com"
                 required
                 error={errors.email}
+                name="email"
               />
             </div>
 
@@ -265,6 +289,7 @@ export default function Contact() {
               required
               multiline
               error={errors.message}
+              name="message"
             />
 
             {errors.submit && (
@@ -280,7 +305,7 @@ export default function Contact() {
             )}
 
             <button
-              onClick={handleSubmit}
+              type="submit"
               disabled={status === 'sending'}
               className="btn-primary"
               style={{ width: '100%', justifyContent: 'center', opacity: status === 'sending' ? 0.7 : 1 }}
@@ -294,7 +319,7 @@ export default function Contact() {
                 <>Send Message →</>
               )}
             </button>
-          </div>
+          </form>
         </div>
       </div>
 
