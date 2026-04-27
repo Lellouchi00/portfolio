@@ -12,7 +12,7 @@ export const personalInfo = {
   phone: "+213 782204879",
   address: "Ghelizan, Algeria",
   github: "https://github.com/Lellouchi00",
-  linkedin: "mzell",
+  linkedin: "https://www.linkedin.com/in/lellouchi-zakaria-abderahmen-969780403/",
   resumeUrl: "/resume.pdf", 
 };
 
